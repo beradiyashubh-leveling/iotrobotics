@@ -1,0 +1,51 @@
+// Arduino PIR Motion Sensor - Error-Free Version 
+int ledPin = 13;        
+int pirPin = 2;         
+// Built-in LED pin 
+// PIR sensor output pin 
+int pirState = LOW;     // Previous PIR state (LOW = no motion) 
+int pirValue = 0;       
+// Current PIR reading 
+int calibrationTime = 30;  // 30 seconds warm-up 
+void setup() { 
+pinMode(ledPin, OUTPUT); 
+pinMode(pirPin, INPUT); 
+Serial.begin(9600); 
+// PIR calibration period 
+Serial.print("Calibrating PIR sensor "); 
+for(int i = 0; i < calibrationTime; i++) { 
+Serial.print("."); 
+delay(1000); 
+} 
+Serial.println(" Done!"); 
+  Serial.println("PIR sensor active - Wait for motion"); 
+  delay(50); 
+} 
+ 
+void loop() { 
+  pirValue = digitalRead(pirPin);  // Read PIR (HIGH = motion) 
+   
+  if (pirValue == HIGH) { 
+    digitalWrite(ledPin, HIGH);    // Turn LED ON 
+     
+    if (pirState == LOW) { 
+      // Motion just started (first HIGH after LOW) 
+      Serial.println("*** MOTION DETECTED! ***"); 
+      pirState = HIGH;             // Update state flag 
+      delay(50);                   // Debounce 
+    } 
+  }  
+  else { 
+    digitalWrite(ledPin, LOW);     // Turn LED OFF 
+     
+    if (pirState == HIGH) { 
+      // Motion ended (first LOW after HIGH)   
+Serial.println("Motion ended"); 
+pirState = LOW;              
+delay(50);                   
+} 
+} 
+// Reset state flag 
+// Debounce 
+delay(100);  // Small loop delay prevents overwhelming reads 
+}
